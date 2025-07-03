@@ -12,7 +12,7 @@ const Id=()=>{
     return uuidv4()
 }
 
-const register=async()=>{
+const register=async(req,res)=>{
     const {fullname,email,password}=req.body;
 
     try {
@@ -93,4 +93,58 @@ const getUserById=async(req,res)=>{
 
     }
 }
+
+const getUsers = async (req, res) => {
+  try {
+    const users = await User.find();
+    res.status(200).json(users);
+  } catch (error) {
+    res.status(500).json({ message: "Error fetching users" });
+  }
+};
+
+//update user
+const updateUser=async(req,res)=>{
+
+    const {userId}=req.params;
+    const {username}=req.body;
+
+    try {
+
+         if (!username) {
+      return res.status(400).json({ message: "Username is required" });
+    }   
+
+        const user=await User.findOneAndUpdate(userId,{username}, { new: true });
+if(!user) return res.status(400).json({message:"user not exist"})
+     return   res.status(200).json(user);
+
+        
+    } catch (error) {
+        console.log("erro in updating user")
+
+        return res.status(500).json({ message: "Error updating user" });
+    }
+
+
+
+}
+
+
+const deleteUser = async (req, res) => {
+  const { userId } = req.params;
+
+  try {
+    const deletedUser = await User.findByIdAndDelete(userId);
+    if (!deletedUser) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    res.status(200).json({ message: "User deleted successfully" });
+  } catch (error) {
+    res.status(500).json({ message: "Error deleting user" });
+  }
+};
+
+
 
